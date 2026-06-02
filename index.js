@@ -4,17 +4,11 @@ import axios from 'axios';
 
 const fastify = Fastify({ logger: true });
 
-// আপনার টার্গেট URL গুলোর লিস্ট
+// আপনার টার্গেট URL গুলোর লিস্ট (নিজের Render লিংক সহ)
 const targetUrls = [
-  'https://e-commerz-pos-cms.onrender.com',
-  'https://e-commerz-pos-cms.onrender.com',
-  'https://e-commerz-pos-cms.onrender.com',
-  'https://arafshop-frontend.vercel.app/shop',
-   'https://arafshop-frontend.vercel.app/shop',
-    'https://arafshop-frontend.vercel.app/shop',
-  'https://url-cron-jobs.onrender.com' ,
-    'https://url-cron-jobs.onrender.com',  
-    'https://url-cron-jobs.onrender.com' // নিজের সার্ভারের লিংক // নিজের সার্ভারের লিংক// নিজের সার্ভারের লিংক
+  'https://onrender.com',
+  'https://vercel.app',
+  'https://onrender.com' // নিজের সার্ভারের লিংক
 ];
 
 // একটার পর একটা URL পিং করার মূল ফাংশন (Sequential Ping)
@@ -42,17 +36,17 @@ async function pingUrlsSequentially() {
   fastify.log.info('--- Cron Job Finished ---');
 }
 
-// ক্রন জব শিডিউলার: প্রতি ১০ মিনিট পর পর ব্যাকগ্রাউন্ডে রান হবে
-cron.schedule('*/10 * * * *', () => {
+// ক্রন জব শিডিউলার: প্রতি ২ মিনিট পর পর ব্যাকগ্রাউন্ডে রান হবে
+// (Cron Expression: */2 * * * *)
+cron.schedule('*/2 * * * *', () => {
   pingUrlsSequentially();
 });
 
-// আপডেট করা রুট API: এখানে হিট করলে ক্রন-জব রান হবে এবং রেসপন্স দিবে
+// রুট API: এখানে হিট করলে ক্রন-জব ব্যাকগ্রাউন্ডে রান হবে এবং সাথে সাথে রেসপন্স দিবে
 fastify.get('/', async (request, reply) => {
-  // ব্যাকগ্রাউন্ডে পিং ফাংশনটি চালু করে দেওয়া হলো (এটি অ্যাসিনক্রোনাসলি চলতে থাকবে)
+  // ব্যাকগ্রাউন্ডে পিং ফাংশনটি চালু করে দেওয়া হলো
   pingUrlsSequentially(); 
   
-  // ইউজার বা ক্রন-টুলকে সাথে সাথে রেসপন্স ব্যাক করবে
   return { 
     status: 'Cron job running process started successfully', 
     total_urls_queued: targetUrls.length,
@@ -60,11 +54,12 @@ fastify.get('/', async (request, reply) => {
   };
 });
 
-// সার্ভার চালু করা
+// সার্ভার চালু করা (Render পোর্ট ফিক্স সহ)
 const start = async () => {
   try {
-    // Render-এর এনভায়রনমেন্ট পোর্ট (process.env.PORT) ডাইনামিকালি সেট করা হয়েছে
-    const port = process.env.PORT || 3000;
+    // Render সাধারণত ১০০০০ পোর্ট ব্যবহার করে, লোকাল হোস্টের জন্য ৩০০০
+    const port = process.env.PORT || 10000;
+    
     await fastify.listen({ port: parseInt(port), host: '0.0.0.0' });
     fastify.log.info(`Server listening on port ${port}`);
   } catch (err) {

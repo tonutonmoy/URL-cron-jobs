@@ -12,7 +12,10 @@ const targetUrls = [
   'https://ecommerce-pos-cms.netlify.app/shop',
   'https://url-cron-jobs.onrender.com' ,// নিজের সার্ভারের লিংক 'https://e-commerz-pos-cms.onrender.com',
   'https://ecommerce-pos-cms.netlify.app/shop',
-  'https://url-cron-jobs.onrender.com' // নিজের সার্ভারের লিংক// নিজের সার্ভারের লিংক
+  'https://url-cron-jobs.onrender.com',
+  'https://880e95db.e-commerz-pos-cms.pages.dev',
+  'https://880e95db.e-commerz-pos-cms.pages.dev',
+  'https://880e95db.e-commerz-pos-cms.pages.dev'
 ];
 
 // একটার পর একটা URL পিং করার মূল ফাংশন (Sequential Ping)

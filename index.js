@@ -4,11 +4,11 @@ import axios from 'axios';
 
 const fastify = Fastify({ logger: true });
 
-// উদাহরণ হিসেবে কিছু Vercel/Netlify URL (বাস্তবে এগুলো ডাটাবেজ থেকে আসবে)
+// আপনার টার্গেট URL গুলোর লিস্ট
 const targetUrls = [
-  'https://e-commerz-pos-cms.onrender.com/',
+  'https://e-commerz-pos-cms.onrender.com',
   'https://arafshop-frontend.vercel.app/shop',
-  
+  'https://url-cron-jobs.onrender.com' // নিজের সার্ভারের লিংক
 ];
 
 // একটার পর একটা URL পিং করার মূল ফাংশন (Sequential Ping)
@@ -20,7 +20,7 @@ async function pingUrlsSequentially() {
       fastify.log.info(`Ping started for: ${url}`);
       
       const startTime = Date.now();
-      // ৫ সেকেন্ড টাইমআউট দেওয়া হয়েছে যাতে কোনো স্লো সাইটের জন্য পুরো লুপ আটকে না থাকে
+      // ৫ সেকেন্ড টাইমআউট দেওয়া হয়েছে
       await axios.get(url, { timeout: 5000 }); 
       const duration = Date.now() - startTime;
       
@@ -29,30 +29,38 @@ async function pingUrlsSequentially() {
       fastify.log.error(`Failed to ping ${url}: ${error.message}`);
     }
     
-    // প্রতিটা URL পিং করার মাঝে ২ সেকেন্ডের একটি গ্যাপ (Delay)
-    // এতে সার্ভারের ওপর একসাথে চাপ পড়বে না এবং লুপটি সুন্দরভাবে চলবে
+    // প্রতিটা URL পিং করার মাঝে ২ সেকেন্ডের গ্যাপ (Delay)
     await new Promise(resolve => setTimeout(resolve, 2000));
   }
   
   fastify.log.info('--- Cron Job Finished ---');
 }
 
-// ক্রন জব শিডিউলার: প্রতি ১০ মিনিট পর পর রান হবে
-// (Cron Expression: */10 * * * *)
+// ক্রন জব শিডিউলার: প্রতি ১০ মিনিট পর পর ব্যাকগ্রাউন্ডে রান হবে
 cron.schedule('*/10 * * * *', () => {
   pingUrlsSequentially();
 });
 
-// একটি সাধারণ রুট (Health Check-এর জন্য)
+// আপডেট করা রুট API: এখানে হিট করলে ক্রন-জব রান হবে এবং রেসপন্স দিবে
 fastify.get('/', async (request, reply) => {
-  return { status: 'Keep-Alive Server is Running', total_urls: targetUrls.length };
+  // ব্যাকগ্রাউন্ডে পিং ফাংশনটি চালু করে দেওয়া হলো (এটি অ্যাসিনক্রোনাসলি চলতে থাকবে)
+  pingUrlsSequentially(); 
+  
+  // ইউজার বা ক্রন-টুলকে সাথে সাথে রেসপন্স ব্যাক করবে
+  return { 
+    status: 'Cron job running process started successfully', 
+    total_urls_queued: targetUrls.length,
+    timestamp: new Date().toISOString()
+  };
 });
 
 // সার্ভার চালু করা
 const start = async () => {
   try {
-    await fastify.listen({ port: 3000, host: '0.0.0.0' });
-    fastify.log.info(`Server listening on http://localhost:3000`);
+    // Render-এর এনভায়রনমেন্ট পোর্ট (process.env.PORT) ডাইনামিকালি সেট করা হয়েছে
+    const port = process.env.PORT || 3000;
+    await fastify.listen({ port: parseInt(port), host: '0.0.0.0' });
+    fastify.log.info(`Server listening on port ${port}`);
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);

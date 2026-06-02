@@ -7,8 +7,14 @@ const fastify = Fastify({ logger: true });
 // আপনার টার্গেট URL গুলোর লিস্ট
 const targetUrls = [
   'https://e-commerz-pos-cms.onrender.com',
+  'https://e-commerz-pos-cms.onrender.com',
+  'https://e-commerz-pos-cms.onrender.com',
   'https://arafshop-frontend.vercel.app/shop',
-  'https://url-cron-jobs.onrender.com' // নিজের সার্ভারের লিংক
+   'https://arafshop-frontend.vercel.app/shop',
+    'https://arafshop-frontend.vercel.app/shop',
+  'https://url-cron-jobs.onrender.com' ,
+    'https://url-cron-jobs.onrender.com',  
+    'https://url-cron-jobs.onrender.com' // নিজের সার্ভারের লিংক // নিজের সার্ভারের লিংক// নিজের সার্ভারের লিংক
 ];
 
 // একটার পর একটা URL পিং করার মূল ফাংশন (Sequential Ping)

@@ -7,11 +7,11 @@ const fastify = Fastify({ logger: true });
 // আপনার টার্গেট URL গুলোর লিস্ট (নিজের Render লিংক সহ)
 const targetUrls = [
  'https://e-commerz-pos-cms.onrender.com',
-  'https://arafshop-frontend.vercel.app/shop',
+  'https://ecommerce-pos-cms.netlify.app/shop',
   'https://url-cron-jobs.onrender.com', // নিজের সার্ভারের লিংক 'https://e-commerz-pos-cms.onrender.com',
-  'https://arafshop-frontend.vercel.app/shop',
+  'https://ecommerce-pos-cms.netlify.app/shop',
   'https://url-cron-jobs.onrender.com' ,// নিজের সার্ভারের লিংক 'https://e-commerz-pos-cms.onrender.com',
-  'https://arafshop-frontend.vercel.app/shop',
+  'https://ecommerce-pos-cms.netlify.app/shop',
   'https://url-cron-jobs.onrender.com' // নিজের সার্ভারের লিংক// নিজের সার্ভারের লিংক
 ];
 
